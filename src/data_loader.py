@@ -1,25 +1,14 @@
-import pandas as pd
 from pathlib import Path
-
+import pandas as pd
 
 def load_datasets(base_dir=None):
     """
     Charge les deux datasets principaux du projet.
-
-    Paramètres
-    ----------
-    base_dir : Path or None
-        Répertoire racine du projet.
-        Si None, utilise le répertoire courant.
-
-    Retour
-    ------
-    df1 : pd.DataFrame
-    df2 : pd.DataFrame
     """
 
     if base_dir is None:
-        base_dir = Path().resolve()
+        # Racine du projet = parent du dossier src
+        base_dir = Path(__file__).resolve().parent.parent
 
     data_path1 = base_dir / "data" / "df_vst_group5.csv"
     data_path2 = base_dir / "data" / "Corkstation_15072019_01022011.csv"
