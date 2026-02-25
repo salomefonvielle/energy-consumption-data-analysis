@@ -1,5 +1,5 @@
-from pathlib import Path
 import pandas as pd
+import numpy as np 
 
 def resample_and_interpolate(
     df,
@@ -9,121 +9,144 @@ def resample_and_interpolate(
     interpolation_method="linear"
 ):
     """
-    Convert date column, resample time series to a fixed frequency,
-    and interpolate numeric columns.
-    
-    Parameters:
-        df (pd.DataFrame): Input dataframe
-        date_col (str): Name of the date column
-        numeric_cols (list): Columns to convert and interpolate
-        freq (str): Resampling frequency (e.g. '30min')
-        interpolation_method (str): Interpolation method
-    
-    Returns:
-        pd.DataFrame: Resampled and interpolated dataframe
+    Convertit la colonne date, resample la série temporelle
+    à une fréquence fixe et interpole les colonnes numériques.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+    date_col : str
+        Nom de la colonne date
+    numeric_cols : list[str]
+        Colonnes à convertir en numérique et à interpoler
+    freq : str
+        Fréquence temporelle (ex: '30min', '1H')
+    interpolation_method : str
+        Méthode d'interpolation (linear, time, spline...)
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame resamplé et interpolé
     """
 
-    df = df.copy()
+    df_copy = df.copy()
 
-    # Convert date column
-    df[date_col] = pd.to_datetime(df[date_col])
+    # Conversion date
+    df_copy[date_col] = pd.to_datetime(df_copy[date_col], errors="coerce")
 
-    # Convert selected columns to numeric
+    # Conversion numérique
     if numeric_cols is not None:
-        df[numeric_cols] = df[numeric_cols].apply(
+        df_copy[numeric_cols] = df_copy[numeric_cols].apply(
             pd.to_numeric, errors="coerce"
         )
 
-    # Set date as index
-    df.set_index(date_col, inplace=True)
+    # Mise en index
+    df_copy = df_copy.set_index(date_col)
 
-    # Create new time index
+    # Création nouvel index temporel
     new_index = pd.date_range(
-        start=df.index.min(),
-        end=df.index.max(),
+        start=df_copy.index.min(),
+        end=df_copy.index.max(),
         freq=freq
     )
 
-    # Reindex
-    df = df.reindex(new_index)
+    # Réindexation
+    df_resampled = df_copy.reindex(new_index)
 
-    # Interpolate
-    df = df.interpolate(method=interpolation_method)
+    # Interpolation
+    df_resampled = df_resampled.interpolate(method=interpolation_method)
 
     # Reset index
-    df = df.reset_index().rename(columns={"index": date_col})
+    df_resampled = df_resampled.reset_index().rename(columns={"index": date_col})
 
-    return df
+    return df_resampled
+
+
+
+import pandas as pd
 
 def merge_on_datetime(
     df1,
     df2,
-    date_col_df1="time",
+    date_col_df1="date",
     date_col_df2="date",
-    output_date_col="date",
     how="inner"
 ):
     """
-    Rename, convert to datetime and merge two DataFrames on a date column.
+    Harmonise les colonnes date et fusionne deux DataFrames
+    sur une colonne datetime.
+
+    Returns
+    -------
+    pd.DataFrame
     """
 
-    df1 = df1.copy()
-    df2 = df2.copy()
+    df1_copy = df1.copy()
+    df2_copy = df2.copy()
 
-    # Rename column if necessary
-    if date_col_df1 != output_date_col:
-        df1.rename(columns={date_col_df1: output_date_col}, inplace=True)
+    # Conversion en datetime
+    df1_copy[date_col_df1] = pd.to_datetime(df1_copy[date_col_df1], errors="coerce")
+    df2_copy[date_col_df2] = pd.to_datetime(df2_copy[date_col_df2], errors="coerce")
 
-    # Convert to datetime
-    df1[output_date_col] = pd.to_datetime(df1[output_date_col])
-    df2[date_col_df2] = pd.to_datetime(df2[date_col_df2])
+    # Harmonisation nom colonne
+    if date_col_df1 != "date":
+        df1_copy = df1_copy.rename(columns={date_col_df1: "date"})
+    if date_col_df2 != "date":
+        df2_copy = df2_copy.rename(columns={date_col_df2: "date"})
 
-    # Merge
-    merged_df = pd.merge(
-        df1,
-        df2,
-        left_on=output_date_col,
-        right_on=date_col_df2,
-        how=how
-    )
+    merged_df = pd.merge(df1_copy, df2_copy, on="date", how=how)
 
     return merged_df
 
 
-def filter_by_date_range(
+def extract_prediction_period(
     df,
-    date_col="date",
-    start_date=None,
+    start_date,
     end_date=None
 ):
     """
-    Filter dataframe between two dates.
+    Extrait la période sur laquelle on souhaite faire des prédictions.
     """
 
-    df = df.copy()
-    df[date_col] = pd.to_datetime(df[date_col])
+    df_copy = df.copy()
+    df_copy["date"] = pd.to_datetime(df_copy["date"])
+    df_copy = df_copy.sort_values("date")
 
-    if start_date is not None:
-        df = df[df[date_col] >= pd.to_datetime(start_date)]
+    start_date = pd.to_datetime(start_date)
 
-    if end_date is not None:
-        df = df[df[date_col] <= pd.to_datetime(end_date)]
+    if end_date:
+        end_date = pd.to_datetime(end_date) + pd.Timedelta(days=1)
+        prediction_df = df_copy[
+            (df_copy["date"] >= start_date) &
+            (df_copy["date"] < end_date)
+            ]
+    else:
+        prediction_df = df_copy[df_copy["date"] >= start_date]
 
-    return df
+    return prediction_df
 
-def resample_daily_mean(df, date_col="date"):
-    df = df.copy()
-    df[date_col] = pd.to_datetime(df[date_col])
 
-    # Garder uniquement les colonnes numériques
-    numeric_cols = df.select_dtypes(include="number").columns
+def drop_missing_rows(df):
+    """
+    Reproduit exactement la logique :
+    - affiche les valeurs manquantes
+    - supprime toutes les lignes avec NaN
+    - réaffiche les valeurs manquantes
+    """
 
-    df = (
-        df
-        .set_index(date_col)[numeric_cols]
-        .resample("D")
-        .mean()
-        .reset_index()
-    )
+    missing_values = df.isnull().sum()
+    print("Valeurs manquantes par colonne :")
+    print(missing_values)
 
-    return df
+    df_cleaned = df.dropna()
+
+    missing_values_after = df_cleaned.isnull().sum()
+    print("Valeurs manquantes par colonne :")
+    print(missing_values_after)
+
+    return df_cleaned
+
+
+
+
