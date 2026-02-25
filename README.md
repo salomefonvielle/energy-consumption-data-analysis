@@ -1,6 +1,7 @@
 # Analyse de la consommation électrique par la Data Science
 
-## Composition du Groupe 
+## Équipe
+
 - Eduardo ROSA DE LIMA  
 - Romero PERARDT MAGALHÃES BRITO  
 - Salomé FONVIELLE  
