@@ -1,61 +1,140 @@
-# Analyse de consommation énergétique par data science
+# Analyse de la consommation électrique par la Data Science
 
-## Contexte
-Projet réalisé dans le cadre du module *EI – Analyse de consommation avec data science* (ST4).  
-L’objectif est d’exploiter des données issues de capteurs énergétiques afin d’analyser, nettoyer et modéliser des séries temporelles de consommation.
+## Composition du Groupe 
+- Eduardo ROSA DE LIMA  
+- Romero PERARDT MAGALHÃES BRITO  
+- Salomé FONVIELLE  
+- Otávio Higino MOURA DE ALENCAR  
 
-Projet réalisé en groupe.
+---
 
-## Problématique
-Comment exploiter des données hétérogènes issues de capteurs pour analyser des profils de consommation énergétique et en extraire des informations exploitables, malgré les données manquantes et les différences de granularité temporelle ?
+## Objectif du projet
 
-## Données
-Les données utilisées proviennent de plusieurs fichiers de capteurs (stations), contenant :
-- des mesures de consommation électrique,
-- des timestamps à différentes fréquences,
-- des valeurs manquantes ou aberrantes.
+Ce projet vise à analyser et prédire la consommation électrique en Irlande à partir :
 
-Un travail préalable de **fusion, alignement temporel et interpolation** est nécessaire avant toute analyse.
+- de données météorologiques,
+- de données de consommation électrique,
+- sur une période de 518 jours,
+- avec un pas de temps de 30 minutes.
 
-## Approche
-Le projet est structuré autour des étapes suivantes :
+L’objectif principal est de prévoir la consommation électrique sur un horizon de 15 jours à l’aide de différentes méthodes de Machine Learning.
 
-1. **Importation et fusion des données**
-   - Chargement de plusieurs sources de données
-   - Alignement temporel des séries
-   - Interpolation des valeurs manquantes
+---
 
-2. **Nettoyage et préparation**
-   - Détection et traitement des incohérences
-   - Normalisation des formats
-   - Sélection des variables pertinentes
+## Données utilisées
 
-3. **Analyse exploratoire**
-   - Visualisation des profils de consommation
-   - Étude des variations temporelles
-   - Comparaison entre stations
+Les données comprennent :
 
-4. **Modélisation**
-   - Mise en œuvre de méthodes statistiques et de data science
-   - Analyse des tendances et comportements de consommation
+- Consommation électrique  
+- Température, humidité, vent, rayonnement solaire  
+- Indication des jours fériés  
 
-## Résultats
-L’analyse permet de :
-- mettre en évidence des profils de consommation distincts,
-- comprendre l’impact du traitement des données manquantes,
-- illustrer l’importance de la préparation des données dans un pipeline data science.
+### Étapes de préparation
 
-Les visualisations et analyses sont regroupées dans le notebook principal.
+1. Fusion des fichiers via la colonne `date`  
+2. Interpolation à un pas de temps de 30 minutes  
+3. Suppression des valeurs manquantes  
+4. Étude des corrélations  
+5. Réduction du nombre de variables  
+6. Encodage cyclique du temps (sin/cos pour mois, heure, jour de semaine)  
+7. Normalisation des variables  
 
+Au final, quatre bases de données ont été construites :
 
-## Organisation du repository
-.
-├── Livrable.ipynb        # Notebook principal du projet
-├── README.md             # Description et contexte du projet
-├── requirements.txt      # Dépendances Python
-├── .gitignore            # Fichiers à ignorer par Git
-└── data/
-    ├── fichier1.csv      # Données utilisées dans l’analyse
-    ├── fichier2.csv
-    └── README.md         # Description des données
+- Base complète  
+- Base complète normalisée  
+- Base réduite  
+- Base réduite normalisée  
 
+---
+
+## Modèles étudiés
+
+Les modèles suivants ont été implémentés et comparés :
+
+- Régression linéaire multidimensionnelle  
+- Decision Tree  
+- Random Forest  
+- MLP (Multilayer Perceptron)  
+- SARIMAX (modèle temporel avec variables exogènes)  
+
+---
+
+## Résultats principaux
+
+| Modèle | R² | MAPE |
+|--------|----|------|
+| Linear Regression | ~68% | ~25% |
+| Decision Tree | ~88% | ~11% |
+| Random Forest | ~93% | ~8% |
+| MLP | ~92–94% | ~8–9% |
+| SARIMAX | ~7% | ~30% |
+
+Les modèles non linéaires (Random Forest et MLP) sont significativement plus performants que la régression linéaire et le modèle SARIMAX.
+
+Le MLP offre un excellent compromis global, tandis que le Random Forest détecte plus finement les pics de consommation.
+
+Une approche ensemble (moyenne MLP + Random Forest) a été utilisée pour produire la prédiction finale.
+
+---
+
+## Structure du projet
+
+```text
+energy-consumption-data-analysis/
+│
+├── data/
+│   ├── raws/            # Données brutes
+│   ├── processed/       # Données nettoyées / transformées
+│   └── results/         # Prédictions exportées
+│
+├── notebooks/
+│   ├── 01_data_preparation.ipynb
+│   └── 02_models.ipynb
+│
+├── src/
+│   ├── data_loader.py
+│   ├── preprocessing.py
+│   ├── feature_engineering.py
+│   ├── validation.py
+│   └── config.py
+│
+├── references/          # Articles scientifiques utilisés
+├── presentation/        # Diaporama final
+│
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## Installation
+
+Créer un environnement virtuel :
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+---
+
+## Exécution
+
+1. Lancer le notebook de préparation des données :
+
+`notebooks/01_data_preparation.ipynb`
+
+2. Puis lancer le notebook de modélisation :
+
+`notebooks/02_models.ipynb`
+
+---
+
+## Conclusion
+
+La consommation électrique présente des dynamiques non linéaires complexes.  
+Les modèles d’ensemble et les réseaux de neurones capturent efficacement ces relations.
+
+L’approche finale repose sur une combinaison MLP + Random Forest afin d’obtenir une prédiction robuste et stable.
