@@ -53,12 +53,13 @@ Au final, quatre bases de données ont été construites :
 
 Les modèles suivants ont été implémentés et comparés :
 
-- Régression linéaire multidimensionnelle  
-- Decision Tree  
-- Random Forest  
-- MLP (Multilayer Perceptron)  
-- SARIMAX (modèle temporel avec variables exogènes)  
-- Validation par validation glissante (Time Series Split) pour respecter la structure temporelle des données
+- Régression linéaire multidimensionnelle
+- Decision Tree
+- Random Forest
+- MLP (Multilayer Perceptron)
+- SARIMAX (modèle temporel avec variables exogènes)
+
+L'évaluation repose sur une **validation glissante (Time Series Split)** afin de respecter la structure temporelle des données.
 
 ---
 
@@ -87,7 +88,7 @@ energy-consumption-data-analysis/
 │
 ├── data/
 │   ├── raws/            # Données brutes
-│   ├── processed/       # Données nettoyées / transformées
+│   ├── processed/       # Données nettoyées / transformées (généré localement)
 │   └── results/         # Prédictions exportées
 │
 ├── notebooks/
@@ -100,7 +101,6 @@ energy-consumption-data-analysis/
 │   ├── feature_engineering.py
 │   ├── validation.py
 │   └── config.py
-│
 │
 ├── requirements.txt
 └── README.md
