@@ -1,4 +1,9 @@
-# config.py
+"""
+config.py — Configuration du projet.
+
+Contient la liste des jours fériés irlandais couverts par le dataset
+(août 2009 – décembre 2010), utilisée pour le feature engineering.
+"""
 
 HOLIDAYS = [
     (2009, 8, 3),
