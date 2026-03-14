@@ -1,5 +1,16 @@
+"""
+preprocessing.py — Fonctions de nettoyage et préparation des données.
+
+Fournit :
+- resample_and_interpolate : rééchantillonnage à 30 min + interpolation linéaire
+- merge_on_datetime         : fusion de deux DataFrames sur colonne datetime
+- extract_prediction_period : extraction d'une période de prédiction
+- drop_missing_rows         : suppression des lignes avec valeurs manquantes
+"""
+
 import pandas as pd
-import numpy as np 
+import numpy as np
+
 
 def resample_and_interpolate(
     df,
@@ -62,9 +73,6 @@ def resample_and_interpolate(
 
     return df_resampled
 
-
-
-import pandas as pd
 
 def merge_on_datetime(
     df1,
