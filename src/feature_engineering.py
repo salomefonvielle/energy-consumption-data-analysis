@@ -1,4 +1,12 @@
-import numpy as np 
+"""
+feature_engineering.py — Création des features temporelles.
+
+Applique un encodage cyclique (sin/cos) aux variables temporelles
+(mois, heure, jour de semaine) afin de conserver leur structure circulaire.
+"""
+
+import numpy as np
+
 
 def modulate_df(df):
 
