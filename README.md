@@ -58,6 +58,7 @@ Les modèles suivants ont été implémentés et comparés :
 - Random Forest  
 - MLP (Multilayer Perceptron)  
 - SARIMAX (modèle temporel avec variables exogènes)  
+- Validation par validation glissante (Time Series Split) pour respecter la structure temporelle des données
 
 ---
 
@@ -100,8 +101,6 @@ energy-consumption-data-analysis/
 │   ├── validation.py
 │   └── config.py
 │
-├── references/          # Articles scientifiques utilisés
-├── presentation/        # Diaporama final
 │
 ├── requirements.txt
 └── README.md
