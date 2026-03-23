@@ -71,7 +71,7 @@ L'évaluation repose sur une **validation glissante (Time Series Split)** afin d
 | Decision Tree | ~88% | ~11% |
 | Random Forest | ~93% | ~8% |
 | MLP | ~92–94% | ~8–9% |
-| SARIMAX | ~7% | ~30% |
+| SARIMAX | ~9% | ~30% |
 
 Les modèles non linéaires (Random Forest et MLP) sont significativement plus performants que la régression linéaire et le modèle SARIMAX.
 
