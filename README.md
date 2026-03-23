@@ -18,7 +18,7 @@ Ce projet vise à analyser et prédire la consommation électrique en Irlande à
 - sur une période de 518 jours,
 - avec un pas de temps de 30 minutes.
 
-L’objectif principal est de prévoir la consommation électrique sur un horizon de 15 jours à l’aide de différentes méthodes de Machine Learning.
+L’objectif principal est de prévoir la consommation électrique sur un horizon de 17 jours à l’aide de différentes méthodes de Machine Learning.
 
 ---
 
